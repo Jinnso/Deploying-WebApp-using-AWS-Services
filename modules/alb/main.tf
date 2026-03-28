@@ -11,16 +11,24 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "app" {
-  name        = "${var.environment}-tg"
+  name_prefix = "app-" 
   port        = 3000
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
-  target_type = "ip" # Requerido para AWS Fargate
+  target_type = "ip"
 
   health_check {
     path                = "/"
-    healthy_threshold   = 2
-    unhealthy_threshold = 10
+    port                = "traffic-port"
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+    timeout             = 5
+    interval            = 30
+    matcher             = "200"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   tags = {
