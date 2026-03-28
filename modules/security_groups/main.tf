@@ -50,17 +50,18 @@ resource "aws_security_group" "ecs" {
   }
 }
 
-# 3. SG para la Base de Datos RDS (Acceso solo desde ECS)
+# Security Group para RDS
 resource "aws_security_group" "rds" {
-  name        = "${var.environment}-rds-sg"
-  description = "Permite trafico a la BD solo desde las tareas de ECS"
+  name        = "rds-sg"
+  description = "Permitir trafico desde ECS hacia RDS"
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port       = 5432 # Cambiar a 3306 si usas MySQL
+    description     = "PostgreSQL desde ECS"
+    from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.ecs.id]
+    security_groups = [aws_security_group.ecs.id] 
   }
 
   egress {
@@ -71,7 +72,6 @@ resource "aws_security_group" "rds" {
   }
 
   tags = {
-    name        = "csgtest"
-    Environment = var.environment
+    name = "csgtest"
   }
 }
