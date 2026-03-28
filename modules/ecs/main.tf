@@ -29,7 +29,7 @@ resource "aws_ecs_task_definition" "app" {
       { name = "APP_ENV", value = var.app_environment },
       { name = "DB_HOST", value = var.db_host },
       { name = "DB_NAME", value = "postgres" },
-      { name = "DB_USER", value = "admin" }
+      { name = "DB_USER", value = "dbadmin" }
     ]
     
     # Secretos (ECS los va a buscar a Secrets Manager de forma segura)

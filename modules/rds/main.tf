@@ -19,7 +19,7 @@ resource "aws_db_instance" "main" {
   skip_final_snapshot    = true # Útil para destruir entornos de prueba rápido
 
   # Las credenciales deberían consumirse del módulo de secretos o variables seguras
-  username = "admin"
+  username = "dbadmin"
   password = var.db_password 
 
   tags = {
