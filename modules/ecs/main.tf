@@ -48,6 +48,14 @@ resource "aws_ecs_task_definition" "app" {
       containerPort = 80
       hostPort      = 80
     }]
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        "awslogs-group"         = aws_cloudwatch_log_group.ecs_logs.name
+        "awslogs-region"        = "us-east-1" # O la región que estés usando
+        "awslogs-stream-prefix" = "app"
+      }
+    }
   }])
 }
 
@@ -72,4 +80,11 @@ resource "aws_ecs_service" "main" {
   } 
 }
 
- 
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name              = "/ecs/${var.cluster_name}"
+  retention_in_days = 7
+
+  tags = {
+    name = "csgtest"
+  }
+} 
