@@ -24,6 +24,6 @@ COPY --from=builder --chown=node:node /usr/src/app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /usr/src/app/server.js ./
 COPY --from=builder --chown=node:node /usr/src/app/public ./public
 
-EXPOSE 80
+EXPOSE 3000
 
 CMD ["node", "server.js"]

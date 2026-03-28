@@ -45,8 +45,9 @@ resource "aws_ecs_task_definition" "app" {
     ]
 
     portMappings = [{
-      containerPort = 80
-      hostPort      = 80
+      containerPort = 3000
+      hostPort      = 3000
+      protocol      = tcp
     }]
     logConfiguration = {
       logDriver = "awslogs"
@@ -76,7 +77,7 @@ resource "aws_ecs_service" "main" {
  load_balancer {
     target_group_arn = var.target_group_arn
     container_name   = "app-container" # Debe coincidir exactamente con el nombre en container_definitions
-    container_port   = 80
+    container_port   = 3000
   } 
 }
 
