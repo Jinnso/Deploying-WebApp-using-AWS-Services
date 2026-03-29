@@ -53,6 +53,47 @@ The workflow (`deploy.yml`) handles both the application build and infrastructur
     ├── secrets/            # AWS Secrets Manager
     └── security_groups/    # Security Groups (ALB, ECS, RDS)
 
+💻 Application Overview
+The repository includes a lightweight, containerized Node.js web application specifically designed to validate the end-to-end infrastructure deployment.
+
+Tech Stack
+
+Backend: Node.js (Express.js)
+
+Database: PostgreSQL (using the pg pool module)
+
+Frontend: Vanilla HTML/CSS/JavaScript
+
+Containerization: Docker (Alpine-based, multi-stage build)
+
+Application Flow & Features
+
+Secure Initialization: Upon starting, the Node.js server establishes a connection pool to the PostgreSQL (RDS) database. It uses credentials that are securely injected at runtime as environment variables directly from AWS Secrets Manager, ensuring zero hardcoded secrets.
+
+Database Migration: The app includes a lightweight initialization script that automatically creates the required tables (e.g., a messages table) if they do not already exist, demonstrating basic automated database migration.
+
+Dynamic UI & Environment Awareness: When a user accesses the Application Load Balancer DNS, the server delivers the frontend. The UI fetches data from the backend API (/api/info) and dynamically displays the current deployment environment (e.g., a yellow badge for TEST or a green badge for PROD), proving that environment variables are correctly passed from Terraform to the ECS tasks.
+
+Data Persistence: Users can submit text inputs via the web interface. The backend processes these inputs, stores them in the RDS database, and retrieves the history, validating full read/write network connectivity between the public-facing Load Balancer, the private ECS containers, and the deeper private database tier.
+
+ALB Health Checks: The application listens on port 3000 and responds to root/health check paths with a 200 OK status, allowing the AWS Target Group to verify container health and route traffic safely.
+
+Required Environment Variables
+
+The application relies on the following environment variables, which are fully managed and injected by the Terraform ECS module:
+
+PORT: The internal port the application listens on (default: 3000).
+
+DB_HOST: The internal DNS address of the RDS instance.
+
+DB_USER: The database administrator username.
+
+DB_PASSWORD: The database password (parsed dynamically from a JSON secret).
+
+DB_NAME: The target database name.
+
+ENVIRONMENT: The deployment stage identifier (test or prod).
+
 🛠️ Prerequisites
 To run this project locally or deploy it to your own AWS account, you need:
 
@@ -69,32 +110,6 @@ AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 
 DB_PASSWORD
-
-## 💻 Application Overview
-
-The repository includes a lightweight, containerized Node.js web application specifically designed to validate the end-to-end infrastructure deployment.
-
-### Tech Stack
-* **Backend:** Node.js (Express.js)
-* **Database:** PostgreSQL (using the `pg` pool module)
-* **Frontend:** Vanilla HTML/CSS/JavaScript
-* **Containerization:** Docker (Alpine-based, multi-stage build)
-
-### Application Flow & Features
-1. **Secure Initialization:** Upon starting, the Node.js server establishes a connection pool to the PostgreSQL (RDS) database. It uses credentials that are securely injected at runtime as environment variables directly from AWS Secrets Manager, ensuring zero hardcoded secrets.
-2. **Database Migration:** The app includes a lightweight initialization script that automatically creates the required tables (e.g., a `messages` table) if they do not already exist, demonstrating basic automated database migration.
-3. **Dynamic UI & Environment Awareness:** When a user accesses the Application Load Balancer DNS, the server delivers the frontend. The UI fetches data from the backend API (`/api/info`) and dynamically displays the current deployment environment (e.g., a yellow badge for `TEST` or a green badge for `PROD`), proving that environment variables are correctly passed from Terraform to the ECS tasks.
-4. **Data Persistence:** Users can submit text inputs via the web interface. The backend processes these inputs, stores them in the RDS database, and retrieves the history, validating full read/write network connectivity between the public-facing Load Balancer, the private ECS containers, and the deeper private database tier.
-5. **ALB Health Checks:** The application listens on port `3000` and responds to root/health check paths with a `200 OK` status, allowing the AWS Target Group to verify container health and route traffic safely.
-
-### Required Environment Variables
-The application relies on the following environment variables, which are fully managed and injected by the Terraform ECS module:
-* `PORT`: The internal port the application listens on (default: `3000`).
-* `DB_HOST`: The internal DNS address of the RDS instance.
-* `DB_USER`: The database administrator username.
-* `DB_PASSWORD`: The database password (parsed dynamically from a JSON secret).
-* `DB_NAME`: The target database name.
-* `ENVIRONMENT`: The deployment stage identifier (`test` or `prod`).
 
 🧹 Clean Up
 To avoid incurring unnecessary AWS charges, destroy the infrastructure when no longer needed:
