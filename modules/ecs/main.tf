@@ -40,7 +40,7 @@ resource "aws_ecs_task_definition" "app" {
     secrets = [
       {
         name      = "DB_PASSWORD"
-        valueFrom = var.db_password_secret_arn
+        valueFrom = "${var.db_password_secret_arn}:password::" 
       }
     ]
 
