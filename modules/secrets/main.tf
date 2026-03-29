@@ -1,6 +1,9 @@
 resource "aws_secretsmanager_secret" "db_password" {
-  name        = "${var.environment}-db-password"
-  description = "Password for the RDS instance"
+  # Cambiamos 'name' por 'name_prefix' para evitar colisiones
+  name_prefix             = "${var.environment}-db-password-"
+  
+  # Obligamos a AWS a borrar el secreto inmediatamente si hacemos un destroy
+  recovery_window_in_days = 0 
 
   tags = {
     name        = "csgtest"
