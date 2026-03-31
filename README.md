@@ -53,6 +53,8 @@ The workflow (`deploy.yml`) handles both the application build and infrastructur
     ├── secrets/            # AWS Secrets Manager
     └── security_groups/    # Security Groups (ALB, ECS, RDS)
 ```
+![Architecture Diagram](AWS_Architecture_diagram.png)
+
 ## 💻 Application Overview
 
 The repository includes a lightweight, containerized Node.js web application specifically designed to validate the end-to-end infrastructure deployment.
@@ -69,6 +71,8 @@ The repository includes a lightweight, containerized Node.js web application spe
 3. **Dynamic UI & Environment Awareness:** When a user accesses the Application Load Balancer DNS, the server delivers the frontend. The UI fetches data from the backend API (`/api/info`) and dynamically displays the current deployment environment (e.g., a yellow badge for `TEST` or a green badge for `PROD`), proving that environment variables are correctly passed from Terraform to the ECS tasks.
 4. **Data Persistence:** Users can submit text inputs via the web interface. The backend processes these inputs, stores them in the RDS database, and retrieves the history, validating full read/write network connectivity between the public-facing Load Balancer, the private ECS containers, and the deeper private database tier.
 5. **ALB Health Checks:** The application listens on port `3000` and responds to root/health check paths with a `200 OK` status, allowing the AWS Target Group to verify container health and route traffic safely.
+
+![App Diagram](App_Architecture_diagram.png)
 
 ### Required Environment Variables
 The application relies on the following environment variables, which are fully managed and injected by the Terraform ECS module:
